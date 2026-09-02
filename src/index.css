@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --color-navy-dark: #071120;
+  --color-navy-medium: #0A192F;
+  --color-navy-light: #172A45;
+  --color-ice-glow: #F0F9FF;
+  --color-ice-accent: #E0F2FE;
+  --color-ice-blue: #BAE6FD;
+  --color-brand-blue: #0EA5E9;
+  --color-brand-hover: #38BDF8;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Global Smooth Theme Switching Transition */
+html,
+body,
+header,
+section,
+footer {
+  transition-property: background-color, border-color, color;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Lenis Smooth Scroll Configuration */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overflow: clip;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Premium Digital Agency Utilities */
+.grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(10, 25, 47, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 25, 47, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.dark .grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(224, 242, 254, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(224, 242, 254, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.dark-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(224, 242, 254, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(224, 242, 254, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.text-stroke-white {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+  color: transparent;
+}
+
+.text-stroke-navy {
+  -webkit-text-stroke: 1px rgba(10, 25, 47, 0.15);
+  color: transparent;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #071120;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0A192F;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #172A45;
+}
+
+::-webkit-scrollbar-thumb:hover,
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #0EA5E9;
+}
+
+/* Subtle floating animation for floating widgets */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float {
+    animation: none !important;
+    transform: none !important;
+  }
+}
