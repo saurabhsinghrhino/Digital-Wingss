@@ -1,13 +1,11 @@
 import React from "react";
+import { WHATSAPP_NUMBER } from "../config/constants";
 
 export default function WhatsAppButton() {
-  // Store number in environment variable or use official Noida service fallback number
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "917379297720";
   const message =
     "Hi DigitalWings, I would like to know more about your services.";
   const encodedMessage = encodeURIComponent(message);
-
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
 
   return (
     <a

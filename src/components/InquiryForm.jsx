@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { Send, CheckCircle2, MessageCircle } from "lucide-react";
+import { WHATSAPP_NUMBER, generateWhatsAppMessage } from "../config/constants";
 
 export default function InquiryForm() {
   const [formData, setFormData] = useState({
@@ -15,8 +16,7 @@ export default function InquiryForm() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [serverError, setServerError] = useState("");
-  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [lastWhatsAppUrl, setLastWhatsAppUrl] = useState("");
 
   const services = [
     "Website Development",
@@ -90,66 +90,41 @@ export default function InquiryForm() {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-
-    setServerError("");
-    setIsRateLimited(false);
 
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/inquiries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      // 1. Generate formatted WhatsApp message from form values
+      const messageText = generateWhatsAppMessage(formData);
+
+      // 2. URL-encode message safely
+      const encodedText = encodeURIComponent(messageText);
+
+      // 3. Construct WhatsApp click-to-chat URL
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedText}`;
+      setLastWhatsAppUrl(whatsappUrl);
+
+      // 4. Open WhatsApp in a new tab (Web or Native App)
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+
+      // 5. Update state and reset form
+      setSubmitSuccess(true);
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        service: "",
+        budget: "",
+        message: "",
       });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setSubmitSuccess(true);
-        setIsRateLimited(false);
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          company: "",
-          service: "",
-          budget: "",
-          message: "",
-        });
-      } else if (response.status === 429) {
-        setIsRateLimited(true);
-        setServerError(
-          data.message ||
-            "You've reached the maximum number of inquiries allowed. Please try again later.",
-        );
-      } else {
-        setIsRateLimited(false);
-        if (data.errors) {
-          const serverValidationErrors = {};
-          data.errors.forEach((err) => {
-            serverValidationErrors[err.field] = err.message;
-          });
-          setErrors(serverValidationErrors);
-        } else {
-          setServerError(
-            data.message || "An error occurred. Please try again.",
-          );
-        }
-      }
     } catch (err) {
-      console.error("Inquiry Form error:", err);
-      setIsRateLimited(false);
-      setServerError(
-        "Unable to connect to the server. Please verify the server is running.",
-      );
+      console.error("Error opening WhatsApp:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -157,26 +132,41 @@ export default function InquiryForm() {
 
   if (submitSuccess) {
     return (
-      <div className="bg-navy-medium dark:bg-slate-900 text-white p-8 md:p-12 text-center flex flex-col items-center justify-center space-y-6 max-w-xl mx-auto shadow-2xl relative overflow-hidden border border-white/10">
+      <div className="bg-navy-medium dark:bg-slate-900 text-white p-8 md:p-12 text-center flex flex-col items-center justify-center space-y-6 max-w-xl mx-auto shadow-2xl relative overflow-hidden border border-white/10 transition-colors duration-300">
         <div className="absolute inset-0 dark-grid-bg opacity-30 pointer-events-none"></div>
         <div className="w-16 h-16 rounded-full bg-brand-blue/20 flex items-center justify-center text-brand-blue animate-bounce">
           <CheckCircle2 className="w-10 h-10" />
         </div>
         <div className="relative z-10 space-y-2">
           <h3 className="text-2xl font-bold tracking-tight">
-            Inquiry Received
+            Enquiry Formatted for WhatsApp
           </h3>
-          <p className="text-sm text-slate-300 max-w-md">
-            Thanks for reaching out to DigitalWings. Our solutions team will
-            analyze your project description and contact you shortly.
+          <p className="text-sm text-slate-300 max-w-md leading-relaxed">
+            Your inquiry details have been collected and opened in WhatsApp.
+            Simply click <strong>Send</strong> inside WhatsApp to start chatting
+            with the DigitalWings team.
           </p>
         </div>
-        <button
-          onClick={() => setSubmitSuccess(false)}
-          className="relative z-10 px-6 py-2.5 bg-white text-navy-medium text-xs font-bold uppercase tracking-widest hover:bg-brand-blue hover:text-white transition-colors duration-300"
-        >
-          Send Another Message
-        </button>
+
+        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3 pt-2">
+          {lastWhatsAppUrl && (
+            <a
+              href={lastWhatsAppUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center space-x-2 px-6 py-2.5 bg-brand-blue text-white text-xs font-bold uppercase tracking-widest hover:bg-brand-hover transition-colors duration-300"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Reopen WhatsApp</span>
+            </a>
+          )}
+          <button
+            onClick={() => setSubmitSuccess(false)}
+            className="px-6 py-2.5 bg-white text-navy-medium text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors duration-300"
+          >
+            Send Another Enquiry
+          </button>
+        </div>
       </div>
     );
   }
@@ -186,34 +176,6 @@ export default function InquiryForm() {
       onSubmit={handleSubmit}
       className="space-y-8 bg-white dark:bg-slate-900 p-6 md:p-10 border border-navy-medium/10 dark:border-white/10 shadow-sm max-w-3xl mx-auto transition-colors duration-300"
     >
-      {serverError && (
-        <div
-          className={`p-5 flex items-start space-x-3 text-sm rounded-none border ${
-            isRateLimited
-              ? "bg-sky-50 dark:bg-slate-800 border-brand-blue/30 text-navy-medium dark:text-sky-300"
-              : "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900 text-red-700 dark:text-red-300"
-          }`}
-        >
-          <AlertCircle
-            className={`w-5 h-5 shrink-0 mt-0.5 ${isRateLimited ? "text-brand-blue" : "text-red-500"}`}
-          />
-          <div>
-            {isRateLimited ? (
-              <>
-                <p className="font-extrabold uppercase tracking-widest text-[10px] mb-1">
-                  Too many requests
-                </p>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {serverError}
-                </p>
-              </>
-            ) : (
-              <p className="text-xs">{serverError}</p>
-            )}
-          </div>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Name Input */}
         <div className="flex flex-col space-y-2">
@@ -404,7 +366,7 @@ export default function InquiryForm() {
           disabled={isSubmitting}
           className="group inline-flex items-center space-x-3 px-8 py-4 bg-navy-medium dark:bg-brand-blue text-white hover:bg-brand-blue dark:hover:bg-sky-400 transition-all duration-300 w-full md:w-auto uppercase tracking-widest text-xs font-bold disabled:opacity-50 disabled:pointer-events-none transform hover:-translate-y-0.5 hover:shadow-lg"
         >
-          <span>{isSubmitting ? "Sending..." : "Send Inquiry"}</span>
+          <span>{isSubmitting ? "Opening WhatsApp..." : "Send Enquiry"}</span>
           <Send className="w-3.5 h-3.5 transition-transform duration-300 transform group-hover:translate-x-1" />
         </button>
       </div>
