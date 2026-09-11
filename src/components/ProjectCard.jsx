@@ -13,11 +13,13 @@ export default function ProjectCard({
       className={`group relative overflow-hidden bg-navy-medium ${sizeClass} aspect-video lg:aspect-[4/3] flex flex-col justify-end p-8 md:p-10 transition-all duration-500`}
     >
       {/* Background Image Container */}
-      <div className="absolute inset-0 z-0">
+      <div
+        className="absolute inset-0 z-0"
+        onClick={() => {
+          window.open(url, "_blank");
+        }}
+      >
         <img
-          onClick={() => {
-            window.open(url, "_blank");
-          }}
           src={imageUrl}
           alt={title}
           className="w-full h-full object-cover transition-transform duration-700 ease-out scale-100 group-hover:scale-105"
