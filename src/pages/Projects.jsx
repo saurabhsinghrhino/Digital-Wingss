@@ -91,7 +91,12 @@ export default function Projects() {
               {featuredProject && (
                 <div className="project-card-item grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border border-navy-medium/10 dark:border-white/10 p-6 md:p-8 bg-slate-50/20 dark:bg-slate-900/60 group">
                   {/* Image side */}
-                  <div className="lg:col-span-7 aspect-video relative overflow-hidden bg-navy-medium">
+                  <div
+                    className="lg:col-span-7 aspect-video relative overflow-hidden bg-navy-medium"
+                    onClick={() => {
+                      window.open(featuredProject.url, "_blank");
+                    }}
+                  >
                     <img
                       src={featuredProject.image}
                       alt={featuredProject.title}
@@ -128,7 +133,8 @@ export default function Projects() {
                         Year: {featuredProject.year}
                       </span>
                       <Link
-                        to={featuredProject.link}
+                        to="https://prekickz.com"
+                        target="_blank"
                         className="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-brand-blue group"
                       >
                         <span>View Case Study</span>
@@ -195,7 +201,8 @@ export default function Projects() {
 
                         <div className="p-6 md:px-8 md:pb-8 pt-0 flex justify-end">
                           <Link
-                            to={proj.link}
+                            to={proj.url}
+                            target="_blank"
                             className="inline-flex items-center space-x-1.5 text-xs font-extrabold uppercase tracking-widest text-brand-blue"
                           >
                             <span>View Project</span>

@@ -15,7 +15,7 @@ export const projectsData = [
     title: "Motiqo E-Commerce Platform",
     category: "Websites",
     year: "2026",
-    image: "/motiqo.png",
+    image: "/motiqo2.png",
     description:
       "Custom headless storefront featuring high speed checkout integrations and dynamic client-side filtering.",
     services: [
