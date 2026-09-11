@@ -24,7 +24,7 @@ export const projectsData = [
       "Shopify Plus API",
       "SEO Optimization",
     ],
-    url: "https://motiqoindia.com/",
+    url: "https://motiqostore.com/",
   },
   {
     id: "paytouch",
@@ -51,7 +51,7 @@ export const projectsData = [
     description:
       "Here you get a branded and high quality women's clothing at affordable price.",
     services: ["MERN Stack", "Graphic-Designing", "Payment Integration"],
-    url: "https://kaytex-wears.netlify.app/",
+    url: "https://kaytex.vercel.app/",
   },
   {
     id: "retag",
